@@ -1,1 +1,5 @@
 rootProject.name = 'dynamic-auto-builder'
+
+include 'robot'
+
+project(':robot').projectDir = new File(settingsDir, 'src/main/java/com/pigmice/frc/auto-builder')

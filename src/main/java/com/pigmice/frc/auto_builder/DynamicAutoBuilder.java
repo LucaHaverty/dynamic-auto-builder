@@ -1,4 +1,4 @@
-package com.pigmice.frc.lib.dynamic_auto_builder;
+package com.pigmice.frc.auto_builder;
 
 import java.util.ArrayList;
 
