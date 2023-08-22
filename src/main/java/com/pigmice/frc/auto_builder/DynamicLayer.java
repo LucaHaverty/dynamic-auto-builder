@@ -1,9 +1,9 @@
 package com.pigmice.frc.auto_builder;
 
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 
+import java.util.ArrayList;
 import java.util.function.Supplier;
 
 import edu.wpi.first.networktables.GenericEntry;
@@ -17,6 +17,7 @@ public class DynamicLayer {
 
     private SendableChooser<String> optionChooser;
 
+    private ArrayList<LayerRestriction> restrictions = new ArrayList<LayerRestriction>();
     private LayerBehaviour behaviour;
 
     private Supplier<Command> command;
@@ -51,28 +52,40 @@ public class DynamicLayer {
         return this;
     }
 
-    public void createWidgets(int column, ShuffleboardTab tab) {
-        // Name and toggle switch (if toggleable)
-        headerEntry = tab.add(name, false).withPosition(column, 0)
+    public void createWidgets(int column) {
+        headerEntry = DynamicAutoBuilder.SHUFFLEBOARD_TAB.add(name, false).withPosition(column, 0)
                 .withWidget(BuiltInWidgets.kToggleSwitch).getEntry();
+
+        System.out.println("Creating " + name + column);
 
         if (singleOption)
             return;
+
+        System.out.println("Multiple options: " + name);
 
         optionChooser = new SendableChooser<String>();
         for (var name : enumValues) {
             optionChooser.addOption(name, name);
         }
 
-        tab.add(optionChooser).withPosition(column, 1);
+        DynamicAutoBuilder.SHUFFLEBOARD_TAB.add("Choose Option", optionChooser).withPosition(column, 1);
     }
 
-    public LayerBehaviour addBehaviour() {
-        behaviour = new LayerBehaviour();
-        return behaviour;
+    public DynamicLayer addRestriction(LayerRestriction restriction) {
+        restrictions.add(restriction);
+        return this;
+    }
+
+    public void setBehaviour(LayerBehaviour behaviour) {
+        this.behaviour = behaviour;
     }
 
     public Command getCommand() {
+        for (var restriction : restrictions) {
+            if (restriction.evaluate() == false)
+                return null;
+        }
+
         if (!headerEntry.getBoolean(false))
             return null;
 

@@ -5,18 +5,31 @@ import java.util.function.Supplier;
 
 import edu.wpi.first.wpilibj2.command.Command;
 
-public class LayerBehaviour {
-    HashMap<String, Supplier<Command>> optionToCommandSet = new HashMap<String, Supplier<Command>>();
+public interface LayerBehaviour {
+    public Command evaluate(String option);
 
-    public LayerBehaviour addCommand(Enum<?> optionName, Supplier<Command> command) {
-        optionToCommandSet.put(optionName.toString(), command);
-        return this;
-    }
+    public void initialize(int columnIndex);
 
-    public Command evaluate(String option) {
-        if (optionToCommandSet.containsKey(option))
-            return optionToCommandSet.get(option).get();
-        else
-            return null;
+    public class MultiOptionLayer implements LayerBehaviour {
+        HashMap<String, Supplier<Command>> optionToCommandSet = new HashMap<String, Supplier<Command>>();
+
+        @Override
+        public void initialize(int columnIndex) {
+            // TODO Auto-generated method stub
+
+        }
+
+        @Override
+        public Command evaluate(String option) {
+            if (optionToCommandSet.containsKey(option))
+                return optionToCommandSet.get(option).get();
+            else
+                return null;
+        }
+
+        public MultiOptionLayer addCommand(Enum<?> optionName, Supplier<Command> command) {
+            optionToCommandSet.put(optionName.toString(), command);
+            return this;
+        }
     }
 }

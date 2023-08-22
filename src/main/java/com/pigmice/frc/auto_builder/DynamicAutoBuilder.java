@@ -10,21 +10,14 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 
 public class DynamicAutoBuilder {
     public static final ShuffleboardTab SHUFFLEBOARD_TAB = Shuffleboard.getTab("Auto Builder");
-    private final DynamicLayer[] layers;
+    private final ArrayList<DynamicLayer> layers = new ArrayList<DynamicLayer>();
 
-    private Command test;
+    public DynamicAutoBuilder addLayer(DynamicLayer layer, LayerBehaviour behaviour) {
+        layer.setBehaviour(behaviour);
+        layer.createWidgets(layers.size());
 
-    public DynamicAutoBuilder(DynamicLayer... layers) {
-        this.layers = layers;
-        test = Commands.print("Test");
-
-        for (int i = 0; i < layers.length; i++) {
-            layers[i].createWidgets(i, SHUFFLEBOARD_TAB);
-        }
-    }
-
-    public void update() {
-        // TODO: remove if not needed
+        layers.add(layer);
+        return this;
     }
 
     private Command[] getCommands() {
