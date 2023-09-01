@@ -3,26 +3,35 @@ package com.pigmice.frc.auto_builder;
 import java.util.HashMap;
 import java.util.function.Supplier;
 
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 
 public interface LayerBehaviour {
-    public Command evaluate(String option);
+    public int initialize(int column, int row, String[] enumValues);
 
-    public void initialize(int columnIndex);
+    public Command evaluate();
 
     public class MultiOptionLayer implements LayerBehaviour {
         HashMap<String, Supplier<Command>> optionToCommandSet = new HashMap<String, Supplier<Command>>();
+        private SendableChooser<String> optionChooser;
 
         @Override
-        public void initialize(int columnIndex) {
-            // TODO Auto-generated method stub
+        public int initialize(int column, int row, String[] enumValues) {
 
+            optionChooser = new SendableChooser<String>();
+            for (var name : enumValues) {
+                optionChooser.addOption(name, name);
+            }
+            DynamicAutoBuilder.SHUFFLEBOARD_TAB.add("Choose Option", optionChooser).withPosition(column, 1);
+
+            return 1;
         }
 
         @Override
-        public Command evaluate(String option) {
-            if (optionToCommandSet.containsKey(option))
-                return optionToCommandSet.get(option).get();
+        public Command evaluate() {
+            String selectedOption = optionChooser.getSelected();
+            if (optionToCommandSet.containsKey(selectedOption))
+                return optionToCommandSet.get(selectedOption).get();
             else
                 return null;
         }

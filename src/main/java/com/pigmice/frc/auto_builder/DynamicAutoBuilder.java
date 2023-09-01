@@ -14,7 +14,7 @@ public class DynamicAutoBuilder {
 
     public DynamicAutoBuilder addLayer(DynamicLayer layer, LayerBehaviour behaviour) {
         layer.setBehaviour(behaviour);
-        layer.createWidgets(layers.size());
+        layer.createHeader(layers.size());
 
         layers.add(layer);
         return this;
